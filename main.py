@@ -19,9 +19,6 @@ if os.path.isdir(downloads_folder_path):
             if os.path.isdir(dir_path) == False:
                 os.makedirs(dir_path, exist_ok=True)
 
-        # უნდა გავაგრძელო რომ დირექტორიის შექმნიშ შემდეგ გადაიტანოს შესაბამისი გაფართოების ფაილები შექმნილ ფოლდერში.
-        # მანდ უნდა გავამახვილო ყურადღება იმაზე რომ როცა ერთი და იგივე დასახელების ფაილია რამე მოვუხერხო 
-
     else:
         print('Download directory is emptry')
 
