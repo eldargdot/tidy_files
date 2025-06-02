@@ -1,5 +1,7 @@
 # File Organizer Script
 
+**About:** A simple Python tool that automatically sorts files into extension-based folders, keeping your chosen directory neat and organized.
+
 This Python script automatically organizes files in your **Downloads** directory (or any specified folder) by grouping them into subdirectories based on their file extensions.
 
 ## Features
@@ -17,9 +19,9 @@ This Python script automatically organizes files in your **Downloads** directory
 
 ## Prerequisites
 
-* Python 3.x installed on your system.
+* Python 3.x installed on your Linux system.
 
-## Installation
+## Installation and Setup
 
 1. Clone or download this repository to your local machine.
 2. Navigate to the project folder:
@@ -31,8 +33,7 @@ This Python script automatically organizes files in your **Downloads** directory
 
    ```bash
    python3 -m venv venv
-   source venv/bin/activate  # macOS/Linux
-   venv\Scripts\activate     # Windows
+   source venv/bin/activate  # Linux
    ```
 4. No external dependencies are required; the script uses only the Python standard library.
 
@@ -47,7 +48,7 @@ This Python script automatically organizes files in your **Downloads** directory
 2. Run the script:
 
    ```bash
-   python main.py
+   python3 main.py
    ```
 
 3. Watch the console output to see each file being moved. On completion, all files in the target directory will be sorted into extension-based subfolders.
