@@ -96,6 +96,25 @@ Instead of hard-coding a target folder, this script prompts you to pick any visi
 
 ---
 
+## Example
+
+Here’s what running the script might look like in your terminal:
+
+```bash
+$ python3 main.py
+Directories in home (excluding hidden): Downloads, Documents, Desktop, Music
+Choose: Downloads
+
+Moved "report.pdf" → "pdf/report.pdf"
+Moved "photo.JPG" → "jpg/photo.jpg"
+Moved "video.mp4" → "mp4/video.mp4"
+Moved "archive.tar.gz" → "gz/archive.tar.gz"
+Processing finished.
+```
+
+---
+
+
 ## Notes
 
 * Files without an extension are placed in `no_extension`.
