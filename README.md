@@ -1,7 +1,3 @@
-Absolutely! Here’s a **ready-to-use GitHub repo description** tailored for your interactive, user-prompt-based file organizer script:
-
----
-
 # Interactive File Organizer
 
 **About:**
