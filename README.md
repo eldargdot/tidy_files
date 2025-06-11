@@ -1,38 +1,51 @@
-# Interactive File Organizer
+# File Organizer Script
 
 **About:**
-A Python script that interactively organizes files in any home subdirectory you choose, sorting them into extension-based folders for a tidier workspace.
+A simple Python tool for Linux that interactively sorts files into extension-based folders, keeping your chosen directory neat and organized.
 
-This tool prompts you to pick a directory from your home folder, then automatically groups and moves all files inside into subfolders named after each file’s extension.
+Instead of hard-coding a target folder, this script prompts you to pick any visible subdirectory in your home folder. It then automatically groups all files inside into subdirectories named after each file’s extension.
 
 ---
 
 ## Features
 
-* **Interactive prompt:** Lists all visible directories in your home and asks you to select one.
-* **Flexible directory selection:** Works on any subfolder (e.g., `Downloads`, `Desktop`, etc.), not just `Downloads`.
-* **Automatic sorting:** Detects each file’s extension (lowercase), creates corresponding folders if needed, and moves files accordingly.
-* **Duplicate handling:** Renames files with suffixes like `_1`, `_2`, etc. if a filename conflict is detected.
-* **Logging:** Prints a log for every file moved, e.g.:
+* **Interactive directory selection:**
 
-  ```
-  Moved "example.docx" → "docx/example.docx"
-  ```
-* **Cross-platform:** Works on Linux, macOS, and Windows.
+  * Lists all non-hidden folders in your home directory
+  * Prompts you to choose one
+  * Re-asks until you enter a valid, non-empty name
+* **Flexible target folder:** Works on any home subdirectory (e.g., `Downloads`, `Documents`, `Desktop`, etc.)
+* **Automatic sorting:**
+
+  * Scans the chosen directory for all files
+  * Extracts each file’s extension (normalized to lowercase)
+  * Creates a subfolder for each extension if it doesn’t already exist
+  * Moves each file into the matching subfolder
+* **Duplicate handling:** Appends incremental suffixes (`_1`, `_2`, …) when a file name conflict occurs
+* **Clear feedback:**
+
+  * Prints “Directory not found” or “No files found” and re-prompts as needed
+  * Logs every move in the format:
+
+    ```
+    Moved "original_name.ext" → "ext/clean_name.ext"
+    ```
+* **Processing complete message:** Informs you when sorting has finished
+* **Linux only:** Uses standard Python libraries and `~/` paths suited for Linux home folders
 
 ---
 
 ## Prerequisites
 
-* Python 3.x installed (works on Linux, Windows, and macOS)
-* No external libraries required (standard library only)
+* Python 3.x installed on your Linux system
+* No external dependencies (standard library only)
 
 ---
 
 ## Installation and Setup
 
-1. **Clone or download** this repository to your machine.
-2. Navigate to the project folder:
+1. **Clone or download** this repository.
+2. Open a terminal and navigate to the project folder:
 
    ```bash
    cd path/to/project
@@ -41,47 +54,54 @@ This tool prompts you to pick a directory from your home folder, then automatica
 
    ```bash
    python3 -m venv venv
-   source venv/bin/activate      # On Linux/macOS
-   .\venv\Scripts\activate      # On Windows
+   source venv/bin/activate
    ```
-4. **No further dependencies** are needed.
 
 ---
 
 ## Usage
 
-1. **Run the script**:
+1. Run the script:
 
    ```bash
    python3 main.py
    ```
-2. **Follow the prompt** to select a directory (e.g., Downloads, Documents, Desktop, etc.).
+2. When prompted, select one of the listed directories (e.g., `Downloads`, `Documents`, `Desktop`).
 3. The script will:
 
-   * Sort all files in the chosen folder into extension-based subfolders
-   * Print a log for every file moved
+   * Validate your input and re-prompt on errors
+   * Sort all files in the chosen directory into extension-named subfolders
+   * Print a log line for each moved file
+   * Show **Processing finished.** when done
 
 ---
 
 ## How It Works
 
-1. **Prompts for directory:** Lists home subdirectories (excluding hidden ones) and asks you to choose.
-2. **Validates input:** Asks again if the directory does not exist or is empty.
-3. **Scans files:** Identifies all files in the selected directory.
-4. **Creates subfolders:** For each file extension (in lowercase), creates a folder if it doesn’t already exist.
-5. **Moves files:** Transfers each file into its corresponding extension folder, appending suffixes for duplicates as needed.
-6. **Prints a move log** for every action taken.
+1. **Directory prompt & validation:**
+
+   * Lists `~/` subfolders (excludes hidden)
+   * Loops until you provide a non-empty, existing directory name
+2. **File scan:** Uses `os.listdir` and `os.path.isfile` to identify files
+3. **Folder creation:**
+
+   * Extracts lowercase extensions via `os.path.splitext`
+   * Creates each extension folder with `os.makedirs(..., exist_ok=True)`
+4. **File moves:**
+
+   * Builds a unique destination path, resolving duplicates with `_1`, `_2`, etc.
+   * Renames/moves files using `os.rename`
+   * Prints a log entry for every move
+5. **Completion:** Prints “Processing finished.” and then re-prompts if you run it again
 
 ---
 
 ## Notes
 
-* Hidden files and files without extensions are placed in a `no_extension` folder.
-* Works with any user-accessible directory inside your home folder.
-* For very large directories, you can adapt the script to add a progress bar or dry-run mode.
+* Files without an extension are placed in `no_extension`.
+* Hidden files/folders (starting with `.`) are ignored in the initial prompt.
+* Designed and tested on Linux; paths use `~/`.
 
 ---
 
-Feel free to modify and expand the script to suit your needs! Pull requests and suggestions are always welcome.
-
----
+Feel free to customize, extend, or contribute enhancements!
