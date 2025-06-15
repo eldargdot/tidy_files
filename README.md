@@ -1,126 +1,149 @@
 # File Organizer Script
 
-**About:**
-A simple Python tool for Linux that interactively sorts files into extension-based folders, keeping your chosen directory neat and organized.
-
-Instead of hard-coding a target folder, this script prompts you to pick any visible subdirectory in your home folder. It then automatically groups all files inside into subdirectories named after each file’s extension.
+**About**
+A cross-platform Python tool that interactively sorts files into extension-based folders and provides audible feedback for invalid input. **Supports Windows, Linux, and macOS**.
 
 ---
 
 ## Features
 
-* **Interactive directory selection:**
+* **Interactive directory selection**
 
   * Lists all non-hidden folders in your home directory
-  * Prompts you to choose one
-  * Re-asks until you enter a valid, non-empty name
-* **Flexible target folder:** Works on any home subdirectory (e.g., `Downloads`, `Documents`, `Desktop`, etc.)
-* **Automatic sorting:**
+  * Prompts you to choose one (case-insensitive)
+  * Supports special commands:
 
-  * Scans the chosen directory for all files
-  * Extracts each file’s extension (normalized to lowercase)
-  * Creates a subfolder for each extension if it doesn’t already exist
+    * Type **help** to display usage instructions
+    * Type **quit** to exit the script
+
+* **Cross-platform beep**
+
+  * Windows: uses `winsound.Beep(freq, duration_ms)`
+  * Linux/macOS: temporarily sets ALSA Master volume, plays a sine-wave tone, then restores volume
+  * Default beep: 3000 Hz for 0.3 s at 70% volume
+
+* **Automatic sorting**
+
+  * Scans the chosen folder for files (ignores subfolders)
+  * Extracts each file’s extension (lowercased) or uses `no_extension` if none
+  * Creates one subfolder per extension if needed
   * Moves each file into the matching subfolder
-* **Duplicate handling:** Appends incremental suffixes (`_1`, `_2`, …) when a file name conflict occurs
-* **Clear feedback:**
 
-  * Prints “Directory not found” or “No files found” and re-prompts as needed
-  * Logs every move in the format:
+* **Duplicate handling**
+
+  * Appends `_1`, `_2`, … to the filename when a conflict occurs
+
+* **Clear feedback**
+
+  * For invalid or empty input: beep + error message + re-prompt
+  * Logs every move as:
 
     ```
-    Moved "original_name.ext" → "ext/clean_name.ext"
+    Moved "original_name.ext" → "ext/clean_name.ext"  
     ```
-* **Processing complete message:** Informs you when sorting has finished
-* **Linux only:** Uses standard Python libraries and `~/` paths suited for Linux home folders
+  * Prints **“Processing finished.”** when done
 
 ---
 
 ## Prerequisites
 
-* Python 3.x installed on your Linux system
-* No external dependencies (standard library only)
+* **Python 3.x** on your system
+* **Windows**: no extra packages needed
+* **Linux/macOS**: install `alsa-utils` (provides `amixer` + `speaker-test`)
 
 ---
 
-## Installation and Setup
+## Installation
 
-1. **Clone or download** this repository.
-2. Open a terminal and navigate to the project folder:
-
-   ```bash
-   cd path/to/project
-   ```
-3. *(Optional)* Create and activate a virtual environment:
+1. Save the script as `main.py` (or another name of your choice).
+2. On Linux/macOS, if needed:
 
    ```bash
-   python3 -m venv venv
-   source venv/bin/activate
+   sudo apt install alsa-utils  
    ```
 
 ---
 
 ## Usage
 
-1. Run the script:
+```bash
+python main.py  
+```
 
-   ```bash
-   python3 main.py
+---
+
+## Interactive Flow
+
+1. The script scans `~/` and lists all non-hidden subfolders.
+
+2. It displays a prompt, for example:
+
    ```
-2. When prompted, select one of the listed directories (e.g., `Downloads`, `Documents`, `Desktop`).
-3. The script will:
+   Directories in home (excluding hidden): Documents, Downloads, Music  
+   Choose one, or type 'help' for instructions, or 'quit' to exit:  
+   ```
 
-   * Validate your input and re-prompt on errors
-   * Sort all files in the chosen directory into extension-named subfolders
-   * Print a log line for each moved file
-   * Show **Processing finished.** when done
+3. **Commands**:
+
+   * **help**: prints this usage summary and re-prompts
+   * **quit**: asks “Are you sure you want to quit? \[y/n]: ”
+
+     * `y`: exits the script
+     * `n`: returns to the directory prompt
+
+4. If you enter a valid folder name, the script proceeds to sort its files.
 
 ---
 
 ## How It Works
 
-1. **Directory prompt & validation:**
+1. **Beep function**
 
-   * Lists `~/` subfolders (excludes hidden)
-   * Loops until you provide a non-empty, existing directory name
-2. **File scan:** Uses `os.listdir` and `os.path.isfile` to identify files
-3. **Folder creation:**
+   * Detects `platform.system()`
+   * On Windows: calls `winsound.Beep()`
+   * On Linux/macOS:
 
-   * Extracts lowercase extensions via `os.path.splitext`
-   * Creates each extension folder with `os.makedirs(..., exist_ok=True)`
-4. **File moves:**
+     1. Checks for `speaker-test` + `amixer`
+     2. Reads current Master volume
+     3. Sets volume to the desired level
+     4. Runs `speaker-test -t sine -f <freq>`
+     5. Sleeps for `<duration_s>`
+     6. Kills the tone process and restores original volume
 
-   * Builds a unique destination path, resolving duplicates with `_1`, `_2`, etc.
-   * Renames/moves files using `os.rename`
-   * Prints a log entry for every move
-5. **Completion:** Prints “Processing finished.” and then re-prompts if you run it again
+2. **Directory prompt & validation**
+
+   * Loops until the user types a non-empty, existing directory name or `quit`
+
+3. **File scan & folder creation**
+
+   * Builds a set of lowercase extensions from files only
+   * Creates one subfolder per extension with `os.makedirs(..., exist_ok=True)`
+
+4. **File moves**
+
+   * Constructs a unique destination path, resolving duplicates with `_1`, `_2`, etc.
+   * Renames/moves files via `os.rename()`
+   * Prints a log entry for each move
+
+5. **Completion**
+
+   * Prints **“Processing finished.”** and exits (unless re-run manually)
 
 ---
 
-## Example
-
-Here’s what running the script might look like in your terminal:
+## Example Session
 
 ```bash
-$ python3 main.py
-Directories in home (excluding hidden): Downloads, Documents, Desktop, Music
-Choose: Downloads
+$ python main.py  
+Directories in home (excluding hidden): Desktop, Documents, Downloads, Music  
+Choose one, or type 'help' for instructions, or 'quit' to exit: Downloads  
 
-Moved "report.pdf" → "pdf/report.pdf"
-Moved "photo.JPG" → "jpg/photo.jpg"
-Moved "video.mp4" → "mp4/video.mp4"
-Moved "archive.tar.gz" → "gz/archive.tar.gz"
-Processing finished.
+Moved "report.pdf" → "pdf/report.pdf"  
+Moved "photo.JPG" → "jpg/photo.jpg"  
+Moved "README" → "no_extension/README"  
+Processing finished.  
 ```
 
 ---
 
-
-## Notes
-
-* Files without an extension are placed in `no_extension`.
-* Hidden files/folders (starting with `.`) are ignored in the initial prompt.
-* Designed and tested on Linux; paths use `~/`.
-
----
-
-Feel free to customize, extend, or contribute enhancements!
+Feel free to adjust beep frequency, duration, or volume in the `beep()` call at the top of `main.py`!
