@@ -130,7 +130,7 @@ On Windows, it uses the built-in winsound module for the beep. On Linux or macOS
             continue
 
         if entries:
-            extensions = [os.path.splitext(f)[1].lstrip('.') for f in entries]
+            extensions = [os.path.splitext(f)[1].lstrip('.').lower() for f in entries]
 
             for ext in extensions:
                 dir_path = os.path.join(downloads_folder_path, ext)
