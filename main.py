@@ -159,6 +159,7 @@ On Windows, it uses the built-in winsound module for the beep. On Linux or macOS
                     file_name = os.path.basename(dest_path)
                     print(f'Moved "{name}" → "{dir_name}/{file_name}"')
             print("Processing finished.")
+            return
         else:
             print('Download directory is empty')
 
